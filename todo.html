@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>
+To Do APP
+</title>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100&display=swap" rel="stylesheet">
+<style>
+*{
+margin:0;
+padding:0;
+border-sizing:border-box;
+}
+body {
+	background: linear-gradient(to top, #7474bf, #348ac7);
+	color:white;
+	text-align:center;
+	height:100%;
+	background-attachment:fixed;
+}
+#container {
+	display:flex;
+	flex-direction:column;
+	flex-wrap:column-wrap;
+	width:100%;
+	
+	background-color:green;
+	justify-content:center;
+	align-items:center;
+}
+h1 {
+	font-family: 'Itim', cursive;
+}	
+#maincontainer {
+	
+	position:fixed;
+	left:0;
+	top:0;
+	width:100%;
+	padding:10px;
+	background:rgba(225,229,234,0.5);	
+	backdrop-filter:blur(25px);
+	box-shadow:0 0 30px 3px black;
+	
+}
+#todo_box {
+	display:flex;
+	flex-flow:column wrap;
+	width:70%;
+	position:absolute;
+	top:150px;
+	z-index:-1;
+}
+.todos {
+	
+	text-align:center;
+	width:50%;
+	margin:10px auto;
+	border:2px solid black;
+	border-radius:10px;
+	overflow:hidden;
+	word-wrap: break-word;
+	box-shadow:4px 4px 18px black;
+	
+	
+}
+.txtbox {
+	border:none;
+	width:15%;
+	height:25px;
+	padding:7px;
+	margin:10px;
+	font-size:18px;
+	font-weight:600;
+	outline:none;
+	border-radius:8px;
+	
+}
+.txtbox:focus
+{
+border:3px solid #04009a;
+}
+.todo_btn {
+	border:none;
+	font-size:15px;
+	font-weight:550;
+	width:75px;
+	padding:10px;
+	margin:15px;
+	border-radius:8px;
+	transition:all 0.3s ease;
+}
+.todo_btn:hover {
+	background: linear-gradient(45deg, #fc354c, #0abfbc);
+}
+.btn {
+	border:none;
+	font-size:14px;
+	font-weight:550;
+	width:55px;
+	padding:6px;
+	margin:6px;
+	border-radius:5px;
+	transition:all 0.3s ease;
+}
+.todos h2 {
+text-align:left;
+padding:5px;
+border-bottom:1px solid black;
+font-family: 'Noto Sans JP', sans-serif;
+font-weight:800;
+background-color:#464f41;
+
+}
+.todos p {
+	font-family: 'Noto Sans JP', sans-serif;
+	font-size:18px;
+	text-align:left;
+	padding:5px;
+	tansition:all 0.3s ease;
+}
+.btn:hover {
+	background:linear-gradient(45deg, #00d2ff, #3a7bd5);
+}
+.todos p:focus {
+	outline:none;
+	border:3px solid #1b1a17;
+	border-radius:8px;
+	margin-top:3px;
+}
+.alert_box {
+	display:none;
+	padding: 20px;
+	width:50%;
+	position:absolute;
+	top:50%;
+	left:50%;
+	transform:translate(-50%,-50%);
+	background-color: #f44336;
+	color: white;
+	backdrop-filter:blur(20px);
+	border-radius:10px;
+	transition:all 0.3s ease;
+  
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+
+.closebtn:hover {
+  color: black;
+}
+
+@media only screen and (max-width:600px) {
+	#maincontainer {
+		display:flex;
+		flex-flow:column wrap;
+		align-items:center;
+		justify-content:center;
+}
+
+.txtbox {
+	width:35%;
+	height:18px;
+	padding:5px;
+	margin:8px;
+	font-size:16px;
+	font-weight:bold;
+}
+
+.todo_btn {
+	
+	font-size:13px;
+	font-weight:550;
+	width:70px;
+	padding:7px;
+	margin:8px;
+	
+	
+}
+
+#todo_box {
+	top:250px;
+}
+}
+</style>
+</head>
+<body>
+<div id="container">
+<div id="maincontainer">
+<h1>TO DO APP</h1>
+<input type="text" id="title" class="txtbox" placeholder="Task Name"  />
+<input type="text" id="content" class="txtbox" placeholder="Task" />
+<button id="addbtn" class="todo_btn" onclick="addtodo()" >ADD</button>
+<button id="clearbtn" class="todo_btn" onclick="cleardata()">CLEAR</button>
+</div>
+<div id="todo_box"></div> 
+<div class="alert_box">Please enter all fields<span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> </div>
+</div>
+
+<script>
+console.log("Script loaded...");
+document.addEventListener('DOMContentLoaded',put_todos);
+var editbtn,deletebtn;
+var box;
+var headBox;
+var bodyBox;
+var count = 0;
+
+if(localStorage.getItem('todos')===null)
+	{
+		count = 0;
+	}
+	else {
+		todos = JSON.parse(localStorage.getItem("todos"));
+		//count = todos.length+1;
+		//console.log(todos[todos.length-1].key);
+		count = parseInt(todos[todos.length-1].key)+1;
+		//console.log(count);
+		
+	}
+//localStorage.clear();
+//Creating todos
+function addtodo()
+{
+	
+	if(document.getElementById("title").value == "" || document.getElementById("content").value == "")
+	{	
+		var dis = document.getElementsByClassName("alert_box")[0];
+		dis.style.display='block';
+		
+	}
+	else {
+		var title = document.getElementById("title").value;
+		var cont = document.getElementById("content").value;
+		box = document.createElement("div");
+		box.classList.add('todos');
+		box.setAttribute("id",count);
+		savetostorage(title,cont,count);
+	
+		count++;
+		headBox = document.createElement("h2");
+		bodyBox = document.createElement("p");
+		editbtn = document.createElement("BUTTON");
+		editbtn.innerHTML = "Edit";
+		deletebtn = document.createElement("BUTTON");
+		deletebtn.innerHTML = "Delete";
+	
+		editbtn.classList.add('btn');
+		deletebtn.classList.add('btn');
+	
+		editbtn.onclick = function() {
+		edit(this);
+		};
+	
+		deletebtn.onclick = function() {
+		del(this);
+		};
+	
+		headBox.innerHTML = title;
+		bodyBox.innerHTML = cont;
+
+		document.getElementById('todo_box').appendChild(box);   
+		box.appendChild(headBox);
+		box.appendChild(bodyBox);
+		box.appendChild(editbtn);
+		box.appendChild(deletebtn);
+	
+	//console.log(box.childNodes);
+	
+	//box.childNodes[1].contentEditable="true";
+	//bodyBox.focus();
+		cleardata();
+	}
+}
+//Clearing input boxex
+function cleardata()
+{
+	document.getElementById("title").value = "";
+	document.getElementById("content").value = "";
+}
+//Making the todos editable
+function edit(btn_edit)
+{
+	btn_edit.parentElement.childNodes[1].contentEditable="true";
+	btn_edit.parentElement.childNodes[1].focus();
+	btn_edit.parentElement.childNodes[1].addEventListener('input',save_data);
+
+}
+//Deleting todos
+function del(curr_obj) {
+
+	var index = curr_obj.parentNode.id;
+	curr_obj.parentElement.remove();
+	todos = JSON.parse(localStorage.getItem("todos"));
+
+	var del_key= todos.findIndex(del_key => del_key.key == index);
+
+	todos.splice(del_key,1);
+	localStorage.setItem("todos",JSON.stringify(todos));
+}
+//For local storage(creating and store to local storage)
+function savetostorage(head,body,key_val)
+{
+	
+	var todos=[];
+	
+	if(localStorage.getItem('todos')===null)
+	{
+		todos = [];
+	}
+	else {
+		todos = JSON.parse(localStorage.getItem("todos"));
+		
+	}
+	
+	var todo={
+		key:key_val,
+		header:head,
+		content:body
+	};
+	todos.push(todo);
+	localStorage.setItem("todos",JSON.stringify(todos));
+	
+}
+
+function put_todos()
+{
+	var todos=[];
+	
+	if(localStorage.getItem('todos')===null)
+	{
+		todos = [];
+	}
+	else {
+		todos = JSON.parse(localStorage.getItem("todos"));
+		
+	}
+	for(var i=0;i<todos.length;i++)
+	{
+		var data = todos[i];
+		
+		
+		
+		box = document.createElement("div");
+		box.classList.add('todos');
+		box.setAttribute("id",data.key);
+		headBox = document.createElement("h2");
+		bodyBox = document.createElement("p");
+		editbtn = document.createElement("BUTTON");
+		editbtn.innerHTML = "Edit";
+		deletebtn = document.createElement("BUTTON");
+		deletebtn.innerHTML = "Delete";
+		
+		editbtn.classList.add('btn');
+	    deletebtn.classList.add('btn');
+		
+
+		editbtn.onclick = function() {
+		edit(this);
+		};
+	
+		deletebtn.onclick = function() {
+		del(this);
+		};
+	
+		headBox.innerHTML = data.header;
+		bodyBox.innerHTML = data.content;
+
+		document.getElementById('todo_box').appendChild(box);    
+		box.appendChild(headBox);
+		box.appendChild(bodyBox);
+		box.appendChild(editbtn);;
+		box.appendChild(deletebtn);
+		
+	}
+
+	
+}
+
+function save_data(e) {
+	todos = JSON.parse(localStorage.getItem("todos"));
+	var key = e.target.parentElement.id;
+	var index= todos.findIndex(index => index.key == key);
+	console.log(todos[index]);
+	todos[index].content = e.target.innerHTML;
+	localStorage.setItem("todos",JSON.stringify(todos));
+	
+}
+</script>
+</body>
+</html>
