@@ -395,7 +395,7 @@ function save_data(e) {
 	todos = JSON.parse(localStorage.getItem("todos"));
 	var key = e.target.parentElement.id;
 	var index= todos.findIndex(index => index.key == key);
-	console.log(todos[index]);
+	//console.log(todos[index]);
 	todos[index].content = e.target.innerHTML;
 	localStorage.setItem("todos",JSON.stringify(todos));
 	
